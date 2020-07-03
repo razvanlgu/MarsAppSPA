@@ -1,5 +1,12 @@
-import React, {Dispatch, SetStateAction, useContext, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import './App.css';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
+import {RoversPage} from "./rovers/Rovers";
 
 interface MyContextData {
     data: number;
@@ -9,6 +16,40 @@ interface MyContextData {
 const MyContext = React.createContext<MyContextData>({} as MyContextData);
 
 function App() {
+    const [data, setData] = useState(0);
+
+    return (
+        <MyContext.Provider value={{data, setData}}>
+            <div className="App">
+                <Router>
+                    <div>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <Link to="/">Home</Link>
+                                </li>
+                                <li>
+                                    <Link to="/rover-photos">Rover Photos</Link>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <Switch>
+                            <Route path="/rover-photos">
+                                <RoversPage/>
+                            </Route>
+                            <Route path="/">
+                                <HomePage/>
+                            </Route>
+                        </Switch>
+                    </div>
+                </Router>
+            </div>
+        </MyContext.Provider>
+    );
+}
+
+const HomePage: React.FC = () => {
     const nasaArticle: ArticleWithPhotoData = {
         title: "NASA",
         paragraph1: "The National Aeronautics and Space Administration (NASA; /ˈnæsə/) is an independent agency of the United States Federal Government responsible for the civilian space program, as well as aeronautics and space research.",
@@ -16,17 +57,13 @@ function App() {
         imgSrc: "./nasa-logo.png"
     }
 
-    const [data, setData] = useState(0);
-
-  return (
-      <MyContext.Provider value={{data, setData}}>
-        <div className="App">
+    return (
+        <div>
             <ButtonCounter/>
             <TextAndNumber text="Here is how many times you pressed the button."/>
             <ArticleWithPhoto {...nasaArticle}/>
         </div>
-      </MyContext.Provider>
-  );
+    );
 }
 
 interface ArticleWithPhotoData {
@@ -38,12 +75,12 @@ interface ArticleWithPhotoData {
 
 const ArticleWithPhoto: React.FC<ArticleWithPhotoData> = (props) => {
     return (
-      <div>
-          <h1>{props.title}</h1>
-          <p>{props.paragraph1}</p>
-          <p>{props.paragraph2}</p>
-          <img src={props.imgSrc}/>
-      </div>
+        <div>
+            <h1>{props.title}</h1>
+            <p>{props.paragraph1}</p>
+            <p>{props.paragraph2}</p>
+            <img src={props.imgSrc} alt=""/>
+        </div>
     );
 }
 
@@ -66,7 +103,7 @@ const ButtonCounter: React.FC = () => {
 
     return (
         <div>
-            <button onClick={() => context.setData(context.data + 1)}> Click me!!! </button>
+            <button onClick={() => context.setData(context.data + 1)}> Click me!!!</button>
         </div>
     );
 }
@@ -81,7 +118,7 @@ const MyNumber: React.FC = () => {
     const context = useContext(MyContext);
 
     return (
-      <div>{context.data}</div>
+        <div>{context.data}</div>
     );
 }
 
